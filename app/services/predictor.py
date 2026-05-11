@@ -321,16 +321,20 @@ def generate_real_recommendations():
 
     model_used = "XGBoost Machine Learning" if use_xgboost else "Statistical Baseline"
     llm_explanation = f"""
-        <strong>Operational Plan for {next_month_date.strftime('%B %Y')} (Enterprise Mode)</strong>
-        <br/><br/>
-        The system utilized the <u>{model_used}</u> model to learn staffing behavior from {total_data_rows} historical shifts. Anti-overfitting measures are actively maintained.
-        <br/><br/>
-        <strong>Algorithm Actions:</strong>
-        <ul style="margin-top: 8px; line-height: 1.6;">
-            <li><strong>1. Demand Prediction:</strong> Predicts varying nurse requirements for weekdays vs. weekends.</li>
-            <li><strong>2. Optimization Rules:</strong> Suggests at least one <b>RN Level 4</b> per shift automatically.</li>
-            <li><strong>3. Dynamic Guidance:</strong> AI suggestions are shown as hints. You must manually drag and drop staff to fulfill the shift quotas.</li>
-        </ul>
+        <div class="ai-bullet-list">
+            <div class="ai-bullet-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="2"></circle></svg>
+                <span>Increase <b>Day Shift</b> coverage to address high patient volume predicted by the <b>{model_used}</b> model.</span>
+            </div>
+            <div class="ai-bullet-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="2"></circle></svg>
+                <span>Add <b>{len(ai_draft)} Nurses</b> to upcoming shifts based on {total_data_rows} historical shift patterns to improve coverage.</span>
+            </div>
+            <div class="ai-bullet-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="2"></circle></svg>
+                <span>Consider cross-training float nurses for <b>Night Shift</b> flexibility to maintain optimal safety protocols.</span>
+            </div>
+        </div>
     """
     
     return recommendations, chart_data, detailed_schedule, nurses_pool, saved_shifts, llm_explanation, ai_draft
