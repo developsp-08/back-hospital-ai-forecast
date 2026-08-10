@@ -1,13 +1,25 @@
 from fastapi import APIRouter, UploadFile, File, Form, Body
 from app.services import predictor
-from typing import Dict
+from typing import Dict, Optional
+from pydantic import BaseModel
 
 router = APIRouter()
+
+class ActualCensusPayload(BaseModel):
+    date: str
+    ward: str = "ER"
+    day_patients: Optional[int] = None
+    night_patients: Optional[int] = None
 
 @router.get("/forecast")
 def get_er_forecast():
     result = predictor.predict_er_hourly()
     return {"status": "success", "data": result}
+
+# ให้ frontend ดึงเกณฑ์เดียวกับที่ CP-SAT ใช้ ไปเช็คตอนลากมือ (single source of truth)
+@router.get("/scheduling-config")
+def get_scheduling_config():
+    return {"status": "success", "data": predictor.SCHEDULING_CONFIG}
 
 # API สำหรับบันทึกการจัดเวรลง Database Neon
 @router.post("/save-schedule")
@@ -37,11 +49,28 @@ async def upload_data(
         result = predictor.predict_er_hourly()
         
     return {
-        "status": "success", 
-        "message": f"{upload_type} processed successfully", 
+        "status": "success",
+        "message": f"{upload_type} processed successfully",
         "recommendations": result.get("recommendations", []),
         "nurses": result.get("nurses", []),
         "chart_data": result.get("chart_data", []),
         "detailed_schedule": result.get("detailed_schedule", []),
-        "llm_explanation": result.get("llm_explanation", "") 
+        "llm_explanation": result.get("llm_explanation", ""),
+        "patient_forecast": result.get("patient_forecast", {}),
+        "fte_info": result.get("fte_info", {})
     }
+
+# API สำหรับกรอกจำนวนคนไข้จริง (manual key-in ย้อนหลังได้ เพื่อใช้แก้/เทรนพยากรณ์เดือนถัดไป)
+@router.get("/actual-census")
+def get_actual_census(month: str, ward: str = "ER"):
+    data = predictor.get_actual_census(month, ward)
+    return {"status": "success", "data": data}
+
+@router.post("/actual-census")
+def save_actual_census(payload: ActualCensusPayload):
+    success = predictor.save_actual_census(
+        payload.date, payload.ward, payload.day_patients, payload.night_patients
+    )
+    if success:
+        return {"status": "success", "message": "Actual census saved"}
+    return {"status": "error", "message": "Failed to save actual census"}

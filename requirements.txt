@@ -68,6 +68,7 @@ typing_extensions==4.15.0
 tzdata==2025.3
 urllib3==2.6.3
 uvicorn==0.39.0
+xgboost==2.1.4
 Werkzeug==3.1.6
 wrapt==2.1.1
 zipp==3.23.0

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
-from app.routers import opd, er, icu, dengue
+from app.routers import opd, er, icu, dengue, nurses
 
 # โหลดค่า Environment Variables
 load_dotenv()
@@ -50,6 +50,7 @@ app.include_router(opd.router, prefix="/api/v1/opd", tags=["OPD"])
 app.include_router(er.router, prefix="/api/v1/er", tags=["ER"])
 app.include_router(icu.router, prefix="/api/v1/icu", tags=["ICU"])
 app.include_router(dengue.router, prefix="/api/v1/dengue", tags=["Dengue"])
+app.include_router(nurses.router, prefix="/api/v1/nurses", tags=["Nurses"])
 
 @app.get("/")
 def root():
